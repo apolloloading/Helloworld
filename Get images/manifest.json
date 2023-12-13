@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Get images",
+  "version": "1.0",
+  "description": "get images",
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "webNavigation",
+    "tabs"
+  ]
+}

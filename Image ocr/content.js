@@ -1,47 +1,37 @@
-chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
-  if (request.action === 'recognizeText') {
+chrome.runtime.sendMessage({action: 'getAccessToken'}, function(response) {
+  if (response.accessToken) {
     const firstImage = document.querySelector('img');
 
+    // Check if a suitable image element is found
     if (!firstImage) {
       console.error('No image found on the page');
-      sendResponse({text: 'No image found on the page'});
-      return false;
+      return;
     }
 
     const imageUrl = firstImage.src;
 
-    try {
-      // Retrieve access token from storage
-      const { accessToken } = await new Promise(resolve => chrome.storage.local.get('accessToken', resolve));
+    // Baidu OCR service request construction
+    const apiUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis";
 
-      const apiUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis";
-      const params = new URLSearchParams({
-        access_token: accessToken,
-        url: imageUrl,
-        line_probability: false,
-        disp_line_poly: false,
-        words_type: 'handprint_mix',
-        layout_analysis: false
+    // Send OCR request
+    fetch(apiUrl + `?access_token=${response.accessToken}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json'
+      },
+      body: `url=${encodeURIComponent(imageUrl)}&line_probability=false&disp_line_poly=false&words_type=handprint_mix&layout_analysis=false`
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Handle Baidu OCR service response
+        const recognizedText = data.words_result.map(result => result.words).join('\n');
+        console.log('Recognized Text:', recognizedText);
+      })
+      .catch(error => {
+        console.error('Error during text recognition:', error);
       });
-
-      const recognitionResponse = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json'
-        },
-        body: params
-      });
-
-      const recognitionData = await recognitionResponse.json();
-      const recognizedText = recognitionData.words_result.map(result => result.words).join('\n');
-
-      sendResponse({text: recognizedText});
-    } catch (error) {
-      console.error('Error during text recognition:', error);
-      sendResponse({text: 'Error during text recognition'});
-    }
-
-    return true;
+  } else {
+    console.error('Access Token not available');
   }
 });

@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Image ocr",
   "version": "1.0",
   "description": "Automatically recognize text in the first image on the webpage using Baidu OCR.",
@@ -13,7 +13,7 @@
     "activeTab",
     "storage"
   ],
-  "browser_action": {
+  "action": {
     "default_icon": {    
     "16": "images/icon-16.png",
     "32": "images/icon-32.png",

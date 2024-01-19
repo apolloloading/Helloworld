@@ -7,13 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
           return;
         }
 
-        console.log('Full Response:', response); // 输出完整的响应对象到控制台
+        console.log('Response:', response); // 输出响应对象到控制台
 
         if (response && response.text) {
           document.getElementById('result').textContent = response.text;
         } else {
           console.error('Invalid response:', response);
-          document.getElementById('result').textContent = 'Invalid response';
         }
       });
     });

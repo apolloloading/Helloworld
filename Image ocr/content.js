@@ -10,15 +10,9 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
 
     const imageUrl = firstImage.src;
 
-    const API_KEY = "ukeyHtSazMqYkZjGvLGF2gnv";
-    const SECRET_KEY = "67FXIykT8EfLlTycu5Fd7GBidknGS0zB";
-
-    const accessTokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${API_KEY}&client_secret=${SECRET_KEY}`;
-
     try {
-      const tokenResponse = await fetch(accessTokenUrl);
-      const tokenData = await tokenResponse.json();
-      const accessToken = tokenData.access_token;
+      // Retrieve access token from storage
+      const { accessToken } = await new Promise(resolve => chrome.storage.local.get('accessToken', resolve));
 
       const apiUrl = "https://aip.baidubce.com/rest/2.0/ocr/v1/doc_analysis";
       const params = new URLSearchParams({
